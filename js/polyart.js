@@ -102,7 +102,7 @@ $(function() {
             sides = 6;
         drawer.updatePolyForm(sides);
         drawer.draw(num);
-        view.draw()
+        view.draw();
     }
     function redraw() {
         var layer;

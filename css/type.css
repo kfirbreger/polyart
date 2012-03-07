@@ -1,31 +1,8 @@
 @font-face {
-    font-family: 'ContraRegular';
-    src: url('type/contra-webfont.eot');
-    src: url('type/contra-webfont.eot?#iefix') format('embedded-opentype'),
-         url('type/contra-webfont.woff') format('woff'),
-         url('type/contra-webfont.ttf') format('truetype'),
-         url('type/contra-webfont.svg#ContraRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
     font-family: "raleway_thin";
     src: url("type/raleway_thin-webfont.eot");
     src: local("☺"),
         url("type/raleway_thin-webfont.woff") format("woff"),
         url("type/raleway_thin-webfont.otf") format("opentype"),
         url("type/raleway_thin-webfont.svg#raleway_thin") format("svg");
-}
-
-@font-face {
-    font-family: 'ChanticleerRomanRegular';
-    src: url('type/CHANTICL-webfont.eot');
-    src: url('type/CHANTICL-webfont.eot?#iefix') format('embedded-opentype'),
-         url('type/CHANTICL-webfont.woff') format('woff'),
-         url('type/CHANTICL-webfont.ttf') format('truetype'),
-         url('type/CHANTICL-webfont.svg#ChanticleerRomanRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
 }
