@@ -9,7 +9,7 @@ At the moment there are two external libraries used:
 - paper.js
 - jQuery
 
-I'll assume you knwo jQuery. Paper.js is used for drawing.
+I'll assume you know jQuery. Paper.js is used for drawing.
 
 ##Browser support
 This project is, as said, in alpha and so not heavily test cross browser. At the moment there is no fallback for input type range,
