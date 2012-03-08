@@ -6,15 +6,39 @@
     <link rel="stylesheet" href="css/normalize.css" type="text/css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="css/type.css" type="text/css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="css/master.css" type="text/css" media="screen" charset="utf-8">
-    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-1.7.1.min.js"></script>
     <script src="js/paper.js"></script>
     <script src="js/polyart.js"></script>
 </head>
 <body>
     <div id="container" class="middle">
-        <h1 class="raletitle">Polygon Art</h1>
-        <canvas id="pappoly" width="400" height="640" title="paper.js and canvas tag"></canvas>
-        <p>Click on the tapestry to regenerate it</p>
+        <div id="polygons">
+            <h1 class="raletitle">Polygon Art</h1>
+            <canvas id="pappoly" width="400" height="640" title="paper.js and canvas tag"></canvas>
+            <p>Click on the tapestry to regenerate it</p>
+            <div id="controls">
+                <div>
+                    <label for="num_value">Number of polygons</label>
+                    <input type="text" name="num_value" value="2000" id="num_value">
+                    <div class="slider">
+                        <div id="num" class="position"></div>
+                    </div>
+                </div>
+                <div>
+                    <label for="sides_value">Polygon sides</label>
+                    <input type="text" name="sides_value" value="6" id="sides_value">
+                    <div class="slider">
+                        <div id="sides" class="position"></div>
+                    </div>
+                </div>
+                <button id="save" value="Save">Save</button>
+            </div>
+        </div>
+        <hr>
+        <div id="dots">
+            <h1 class="raletitle">Dots Art</h1>
+            <canvas id="papdots" width="640" height="480" title="Color dots"></canvas>
+            <p>Click on the tapestry to regenerate it</p>
     </div>
 </body>
 </html>
