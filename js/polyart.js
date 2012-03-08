@@ -10,6 +10,8 @@ var Dots = (function(window, document, undefined) {
         circle.fillColor = color;
     },
     makeGrid = function() {
+        var max_x, max_y;
+        max_X = canvas.width;
         
     }
 })(this, this.document);
@@ -25,7 +27,8 @@ var Drawer = (function(window, document, undefined) {
         min_c = 0.2,
         alpha_constant = 0.8,
         logger = {},
-        poly_count,
+        sides,
+        num,
         d = {},
     // Private functions
     createLocation = function() {
@@ -80,31 +83,32 @@ var Drawer = (function(window, document, undefined) {
             logger[size] = 1;
         }
         color = createColor();
-        poly = new Path.RegularPolygon(point, poly_count, size);
+        poly = new Path.RegularPolygon(point, sides, size);
         poly.fillColor = color;
     },
-    setSize = function(cx, cy) {
-        x = cx;
-        y = cy;
+    setSize = function() {
+        var c = $('canvas');
+        x = c.width();
+        y = c.height();
     };
     
     // Publuc functions
     //------------------
-    // Read canvas size
-    d.canvasSize = function() {
-        var c = $('canvas');
-        setSize(c.width(), c.height());
+    updateFromPolyForm = function() {
+        num = parseInt($('#num').val(), 10);
+        sides = parseInt($('#sides').val(), 10);
+    };
+    
+    d.init = function() {
+        setSize();
+        updateFromPolyForm();
     };
     // Draw the polygons
-    d.draw = function(repeats) {
+    d.draw = function() {
         var i;
-        for (i = 0;i < repeats; i++) {
+        for (i = 0;i < num; i++) {
             addPolygon();
         }
-        // console.log(logger);
-    };
-    d.updatePolyForm = function(sides) {
-        poly_count = sides;
     };
     // Save the tapestry as an image
     d.save = function() {
@@ -120,80 +124,10 @@ var Drawer = (function(window, document, undefined) {
 // Installing paper on the global scope
 paper.install(window);
 
-var Controller = (function(window, document, undefined) {
-    var track,
-        c = {},
-        sides = {
-            min: 3,
-            max: 12,
-            step: 1,
-            pixels: 0
-        },
-        num = {
-            min: 1,
-            max: 10000,
-            step: 100,
-            pixels: 0
-        },
-        mtrack = {
-            prev: 0,
-            cur: 0,
-            delta: 0
-        },
-        pos,
-        item,
-        leftFromPx = function(lft) {
-            var str, len;
-            len = lft.length;
-            str = lft.substring(0, len - 2);
-            // Creating an integer
-            return parseInt(str, 10);
-        }
-        tracking = false;
-    // Public functions
-    c.init = function() {
-        max_pos = $('.slider').width();
-        sides.pixels = max_pos / ((sides.max - sides.min) / sides.step);
-        num.pixels = max_pos / ((num.max - num.min) / num.step);
-        $('.position').mousedown(function(event) {
-            tracking = this;
-            mtrack.prev = event.pageX;
-            $(tracking).mousemove(function(e) {
-                console.log(e);
-                mtrack.cur = e.pageX;
-                mtrack.delta = mtrack.cur - mtrack.prev;
-                mtrack.prev = mtrack.cur;
-                if (mtrack.delta) {
-                    pos = leftFromPx($(tracking).css('left'));
-                    console.log(pos);
-                    console.log(mtrack.delta);
-                    pos += mtrack.delta;
-                    console.log(pos);
-                    $(tracking).css('left', pos);
-                }
-            });
-        });
-        $('body').mouseup(function(event) {
-            tracking = false;
-            $('.position').unbind('mousemove');
-        });
-    };
-    
-    c.snapshot = function() {
-        var stats = {};
-        
-        return stats;
-    }
-    return c;
-})(this, this.document);
-
 $(function() {
     var canvas;
     function draw() {
-        var num = 2000,
-            sides = 6;
-        Drawer.updatePolyForm(sides);
-        Drawer.draw(num);
+        Drawer.draw();
         view.draw();
     }
     function redraw() {
@@ -203,12 +137,11 @@ $(function() {
         draw();
     }
 
-    Controller.init();
     // Get a reference to the canvas object
     canvas = document.getElementById('pappoly');
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-    Drawer.canvasSize();
+    Drawer.init();
 
     // Draw
     draw();

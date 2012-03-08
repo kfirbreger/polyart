@@ -6,3 +6,12 @@
         url("type/raleway_thin-webfont.otf") format("opentype"),
         url("type/raleway_thin-webfont.svg#raleway_thin") format("svg");
 }
+
+@font-face {
+    font-family: "contra";
+    src: url("type/contra-webfont.eot");
+    src: local("☺"),
+        url("type/contra-webfont.woff") format("woff"),
+        url("type/contra-webfont.otf") format("opentype"),
+        url("type/contra-webfont.svg#contra") format("svg");
+}
