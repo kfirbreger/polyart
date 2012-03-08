@@ -256,8 +256,8 @@ $(function() {
     // Draw
     draw();
     
-    //Dots.init('papdots');
-    //Dots.draw();
+    Dots.init('papdots');
+    Dots.draw();
     $('#pappoly').click(function(event) {
         redraw();
     });    
