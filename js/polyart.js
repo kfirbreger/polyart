@@ -1,8 +1,11 @@
-var Dots = (function(window, document, undefined) {
+var Dots = (function(window, document, paper, undefined) {
     var gr = 1.61803399,
         size_x,
         size_y,
+        max_c = 0.6,
+        min_c = 0.4,
         canvas,
+        dot_size,
         grid = [],
         grid_size = 20,
     createDot = function(point, size, color) {
@@ -10,11 +13,73 @@ var Dots = (function(window, document, undefined) {
         circle.fillColor = color;
     },
     makeGrid = function() {
-        var max_x, max_y;
-        max_X = canvas.width;
-        
-    }
-})(this, this.document);
+        var max_x, max_y, i, j;
+        max_x = canvas.width;
+        max_y = canvas.height;
+        for (i = grid_size;i < max_x; i += grid_size) {
+            for (j = grid_size;j < max_y; j += grid_size) {
+                grid.push([i,j]);
+            }
+        }
+    },
+    d = {},
+    
+    colorDisapprove = function(color) {
+        var r = color.r,
+            g = color.g,
+            b = color.b,
+            disallow = true;
+        if (r > max_c && g > max_c && b > max_c) {
+            disallow = false;
+        } else if (r > max_c && g > max_c && b < min_c) {
+            disallow = false;
+        } else if (r > max_c && g < min_c && b > max_c) {
+            disallow = false;
+        } else if (r < min_c && g > max_c && b > max_c) {
+            disallow = false;
+        } else if (r > max_c && g < min_c && b < min_c) {
+            disallow = false;
+        } else if (r < min_c && g < min_c && b > max_c) {
+            disallow = false;
+        } else if (r < min_c && g < min_c && b > max_c) {
+            disallow = false;
+        }
+        return disallow;
+    },
+    createColor = function() {
+        // @TODO use object data
+        var color = {r: 0, g: 0, b: 0}, a, c;
+        // Creating color
+        while (colorDisapprove(color)) {
+            color.r = Math.random();
+            color.g = Math.random();
+            color.b = Math.random();
+        }
+        a = Math.random();
+        c = new RgbColor(color.r, color.g, color.b, a);
+    
+        return c;
+    };
+    
+    d.init = function(canvas_id) {
+        canvas = document.getElementById(canvas_id);
+        paper.setup(canvas);
+        makeGrid();
+        dot_size = 6
+    };
+    d.draw = function() {
+        var i, c, p;
+        for (i = 0;i < grid.length; i++) {
+            p = new Path.Circle(new Point(grid[i][0], grid[i][1]), dot_size);
+            c = createColor();
+            p.fillColor = c;
+        }
+        view.draw();
+    };
+    
+    return d;
+})(this, this.document, paper);
+
 // Drawer object
 var Drawer = (function(window, document, undefined) {
     var gr = 1.61803399,
@@ -190,6 +255,9 @@ $(function() {
 
     // Draw
     draw();
+    
+    Dots.init('papdots');
+    Dots.draw();
     $('#pappoly').click(function(event) {
         redraw();
     });    
