@@ -17,17 +17,23 @@
             <canvas id="pappoly" width="320" height="480" title="paper.js and canvas tag"></canvas>
             <p>Click on the tapestry to regenerate it</p>
             <div id="controls">
-                <label for="sides"><canvas id="polycountshow" width="16" height="16"></label>
-                <input type="range" id="sides" value="6" min="3" max="12" step="1">
-                <label for="num">Count</label>
-                <input type="range" id="num" value="2000" min="0" max="5000" step="250">
-                <div id="colorprefshow"></div>
-                <input type="range" id="colorpref" value="0" min="0" max="3" step="1">
-                <input type="radio" name="sizedef" value="iPhone" checked>iPhone
-                <input type="radio" name="sizedef" value="iPhone4">iPhone 4
-                <input type="radio" name="sizedef" value="iPad">iPad
-                <input type="radio" name="sizedef" value="fs">Full Screen
-                <img id="polysave" class="save_button" src="images/save-icon.svg">
+                <div class="crow">
+                    <label for="sides"><canvas id="polycountshow" width="16" height="16"></label>
+                    <input type="range" id="sides" value="6" min="3" max="12" step="1">
+                    <label for="num">Count</label>
+                    <input type="range" id="num" value="2000" min="0" max="10000" step="250">
+                    <div id="colorprefshow"></div>
+                    <input type="range" id="colorpref" value="0" min="0" max="3" step="1">
+                </div>
+                <div class="crow">
+                    <input type="radio" name="sizedef" value="iPhone" checked><img class="resipo" src="images/iphone.svg">
+                    <input type="radio" name="sizedef" value="iPhone4"><img class="resipo" src="images/iphone4.svg">
+                    <input type="radio" name="sizedef" value="iPad"><img class="resipa" src="images/ipad.svg">
+                    <!-- <input type="radio" name="sizedef" value="fs"><img class="resfs" src="images/fs.svg"> -->
+                </div>
+                <div class="crow">
+                    <img id="polysave" class="save_button" src="images/save-icon.svg">
+                </div>
             </div>
         </div>
         <hr>

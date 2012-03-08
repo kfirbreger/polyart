@@ -16,8 +16,24 @@ h1 {
 }
 
 .save_button {
-  width: 3em;
-  height: 3em;
+    width: 3em;
+    height: 3em;
+}
+
+.resipa {
+    width: 3em;
+}
+
+.resipo {
+    width: 2em;
+}
+
+.resfs {
+    width: 4em;
+}
+
+.crow {
+    padding: 1em;
 }
 
 #container {

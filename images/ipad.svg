@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="350" height="460" viewBox="0, 0, 350, 460">
+  <g id="Layer 1">
+    <path d="M48.382,456 C24.975,456 6,442.815 6,426.551 L6,35.449 C6,19.185 24.975,6 48.382,6 L301.618,6 C325.025,6 344,19.185 344,35.449 L344,426.551 C344,442.815 325.025,456 301.618,456 z M48.382,456" stroke="#000000" stroke-width="1" stroke-opacity="0" fill="#000000"/>
+  </g>
+  <g id="screen">
+    <path d="M35,32 L315,32 L315,382 L35,382 z" stroke="#000000" stroke-width="1" stroke-opacity="0" fill="#FFFFFF"/>
+  </g>
+  <g id="button">
+    <path d="M194.207,405.793 C202.054,413.639 202.054,426.361 194.207,434.207 C186.361,442.054 173.639,442.054 165.793,434.207 C157.946,426.361 157.946,413.639 165.793,405.793 C173.639,397.946 186.361,397.946 194.207,405.793" stroke="#000000" stroke-width="1" stroke-opacity="0" fill="#FFFFFF"/>
+  </g>
+  <defs/>
+</svg>
