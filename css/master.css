@@ -15,6 +15,11 @@ h1 {
     font-size: 4em;
 }
 
+.save_button {
+  width: 3em;
+  height: 3em;
+}
+
 #container {
     padding: 1em;
     width: 900px;
@@ -23,6 +28,14 @@ h1 {
 
 #pappoly {
     border: solid #000 8px;
+}
+
+#colorprefshow {
+  width: 1em;
+  height: 1em;
+  background-color: #fff;
+  border: 1px solid #000;
+  display: inline-block;
 }
 
 .middle {

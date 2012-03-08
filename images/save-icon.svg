@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="512" height="512" viewBox="0, 0, 512, 512">
+  <g id="Base">
+    <path d="M247.993,491.582 L470.561,357.245" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M463,371 L462.542,268" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M265,491.691 L43,357.097" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M256.458,490 L256.117,392.959" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M50.458,370 L50,267" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M43,281 L163,203" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M469.922,281 L349.922,203" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M255.012,397.465 L58.652,277.148" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+    <path d="M255,399.137 L451.359,278.82" stroke="#000000" stroke-width="32" fill="#000000" fill-opacity="0"/>
+  </g>
+  <g id="Arrow">
+    <g>
+      <path d="M256,55 L256,181.133" stroke="#000000" stroke-width="72" fill="#000000" fill-opacity="0"/>
+      <path d="M196,175 L256,255 L316,175 z" stroke="#000000" stroke-width="32" fill="#000000"/>
+    </g>
+  </g>
+  <defs/>
+</svg>

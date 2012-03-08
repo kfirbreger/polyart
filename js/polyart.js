@@ -29,6 +29,18 @@ var Drawer = (function(window, document, undefined) {
         logger = {},
         sides,
         num,
+        colorpref = {
+            0: 'a',
+            1: 'r',
+            2: 'g',
+            3: 'b',
+            a: '#fff',
+            r: '#f00',
+            g: '#0f0',
+            b: '#00f',
+            cur: 0,
+            weight: 0.25
+        },
         d = {},
     // Private functions
     createLocation = function() {
@@ -38,8 +50,14 @@ var Drawer = (function(window, document, undefined) {
         p = new Point(px, py);
         return p;
     },
-    colorDisapprove = function(r, g, b) {
-        var disallow = true;
+    polyCountShow = function() {
+        
+    }
+    colorDisapprove = function(color) {
+        var r = color.r,
+            g = color.g,
+            b = color.b,
+            disallow = true;
         if (r > max_c && g > max_c && b > max_c) {
             disallow = false;
         } else if (r > max_c && g > max_c && b < min_c) {
@@ -59,15 +77,21 @@ var Drawer = (function(window, document, undefined) {
         return disallow;
     },
     createColor = function() {
-        // @TODO use object data 
-        var r = 0, g = 0, b = 0, a, c;
-        while (colorDisapprove(r, g, b)) {
-            r = Math.random();
-            g = Math.random();
-            b = Math.random();
+        // @TODO use object data
+        var color = {r: 0, g: 0, b: 0}, a, c;
+        // Creating color
+        while (colorDisapprove(color)) {
+            color.r = Math.random();
+            color.g = Math.random();
+            color.b = Math.random();
+            // color preference
+            if (colorpref.cur > 0) {
+                color[colorpref[colorpref.cur]] = (color[colorpref[colorpref.cur]] + colorpref.weight) / (1 + colorpref.weight);
+            }
         }
+        
         a = Math.random()* Math.random();
-        c = new RgbColor(r, g, b, a);
+        c = new RgbColor(color.r, color.g, color.b, a);
     
         return c;
     },
@@ -110,6 +134,17 @@ var Drawer = (function(window, document, undefined) {
             addPolygon();
         }
     };
+    d.updateValue = function(field, val) {
+        var c;
+        if (field == 'num') {
+            num = val;
+        } else if (field == 'sides') {
+            sides = val;
+        } else if (field =='colorpref') {
+            colorpref.cur = val;
+            $('#colorprefshow').css('background-color', colorpref[colorpref[val]]);
+        }
+    }
     // Save the tapestry as an image
     d.save = function() {
         var canvas, img;
@@ -148,8 +183,12 @@ $(function() {
     $('#pappoly').click(function(event) {
         redraw();
     });    
-    $("#save").click(function() {
+    $("#polysave").click(function() {
         Drawer.save();
+    });
+    $('input[type=range]').change(function(e) {
+        Drawer.updateValue(e.srcElement.id, e.srcElement.valueAsNumber);
+        redraw();
     });
 });
 
