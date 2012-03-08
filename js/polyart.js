@@ -20,8 +20,8 @@ var Drawer = (function(window, document, undefined) {
     var gr = 1.61803399,
         save_mime = "image/octet-stream",
         // @TODO use jQuery to get canvas size and calculate range
-        x = 500,
-        y = 800,
+        x,
+        y,
         offset = 50,
         max_c = 0.8,
         min_c = 0.2,
@@ -29,6 +29,12 @@ var Drawer = (function(window, document, undefined) {
         logger = {},
         sides,
         num,
+        sizes = {
+            'iPhone': [320, 480],
+            'iPhone4': [640, 960],
+            'iPad': [768, 1024],
+            'fs': [100, 100],
+        }
         colorpref = {
             0: 'a',
             1: 'r',
@@ -50,9 +56,6 @@ var Drawer = (function(window, document, undefined) {
         p = new Point(px, py);
         return p;
     },
-    polyCountShow = function() {
-        
-    }
     colorDisapprove = function(color) {
         var r = color.r,
             g = color.g,
@@ -111,7 +114,7 @@ var Drawer = (function(window, document, undefined) {
         poly.fillColor = color;
     },
     setSize = function() {
-        var c = $('canvas');
+        var c = $('#pappoly');
         x = c.width();
         y = c.height();
     };
@@ -124,9 +127,13 @@ var Drawer = (function(window, document, undefined) {
     };
     
     d.init = function() {
+        this.prepare();
+        sizes.fs = [$(document).width(), $(document).height()];
+    };
+    d.prepare = function() {
         setSize();
         updateFromPolyForm();
-    };
+    }
     // Draw the polygons
     d.draw = function() {
         var i;
@@ -145,6 +152,9 @@ var Drawer = (function(window, document, undefined) {
             $('#colorprefshow').css('background-color', colorpref[colorpref[val]]);
         }
     }
+    d.getCanvasSize = function(t) {
+        return sizes[t];
+    }
     // Save the tapestry as an image
     d.save = function() {
         var canvas, img;
@@ -160,7 +170,7 @@ var Drawer = (function(window, document, undefined) {
 paper.install(window);
 
 $(function() {
-    var canvas;
+    var pappoly;
     function draw() {
         Drawer.draw();
         view.draw();
@@ -173,9 +183,9 @@ $(function() {
     }
 
     // Get a reference to the canvas object
-    canvas = document.getElementById('pappoly');
+    pappoly = document.getElementById('pappoly');
     // Create an empty project and a view for the canvas:
-    paper.setup(canvas);
+    paper.setup(pappoly);
     Drawer.init();
 
     // Draw
@@ -188,6 +198,16 @@ $(function() {
     });
     $('input[type=range]').change(function(e) {
         Drawer.updateValue(e.srcElement.id, e.srcElement.valueAsNumber);
+        redraw();
+    });
+    $('input[name=sizedef]').change(function(e) {
+        var size = Drawer.getCanvasSize(e.srcElement.value),
+            pappoly = document.getElementById('pappoly');
+        console.log(size);
+        pappoly.width = size[0];
+        pappoly.height = size[1];
+        paper.setup(pappoly);
+        Drawer.prepare();
         redraw();
     });
 });
