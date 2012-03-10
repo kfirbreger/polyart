@@ -1,4 +1,4 @@
-var Dots = (function(window, document, paper, undefined) {
+var Dots = (function(window, document, undefined) {
     var gr = 1.61803399,
         size_x,
         size_y,
@@ -7,7 +7,7 @@ var Dots = (function(window, document, paper, undefined) {
         canvas,
         dot_size,
         grid = [],
-        grid_size = 20,
+        grid_size = 30,
     createDot = function(point, size, color) {
         circle = new Path.Circle(point, size);
         circle.fillColor = color;
@@ -55,7 +55,7 @@ var Dots = (function(window, document, paper, undefined) {
             color.g = Math.random();
             color.b = Math.random();
         }
-        a = Math.random();
+        a = Math.random() * Math.random();
         c = new RgbColor(color.r, color.g, color.b, a);
     
         return c;
@@ -63,22 +63,25 @@ var Dots = (function(window, document, paper, undefined) {
     
     d.init = function(canvas_id) {
         canvas = document.getElementById(canvas_id);
-        paper.setup(canvas);
         makeGrid();
         dot_size = 6
     };
-    d.draw = function() {
-        var i, c, p;
+    d.draw = function(view_id) {
+        var i, c, p, layer;
+        paper.projects[view_id].activate();
+        paper.views[view_id].activate();
+        paper.project.activeLayer.remove(); 
+        layer = new Layer(); 
         for (i = 0;i < grid.length; i++) {
             p = new Path.Circle(new Point(grid[i][0], grid[i][1]), dot_size);
             c = createColor();
             p.fillColor = c;
         }
-        view.draw();
+        paper.view.draw();
     };
     
     return d;
-})(this, this.document, paper);
+})(this, this.document);
 
 // Drawer object
 var Drawer = (function(window, document, undefined) {
@@ -169,11 +172,7 @@ var Drawer = (function(window, document, undefined) {
         size = Math.random();
         //size = Math.abs(9 * Math.pow(size, 4) - 12 * Math.pow(size, 3) + 3 * Math.pow(size, 2));
         size = Math.round(6 + (size * gr * 30));
-        if (logger[size]) {
-            logger[size]++;
-        } else {
-            logger[size] = 1;
-        }
+ 
         color = createColor();
         poly = new Path.RegularPolygon(point, sides, size);
         poly.fillColor = color;
@@ -200,11 +199,16 @@ var Drawer = (function(window, document, undefined) {
         updateFromPolyForm();
     }
     // Draw the polygons
-    d.draw = function() {
-        var i;
+    d.draw = function(proj_id) {
+        var i, layer;
+        paper.projects[proj_id].activate();
+        paper.views[proj_id].activate();
+        paper.project.activeLayer.remove(); 
+        layer = new Layer(); 
         for (i = 0;i < num; i++) {
             addPolygon();
         }
+        paper.view.draw();
     };
     d.updateValue = function(field, val) {
         var c;
@@ -231,52 +235,44 @@ var Drawer = (function(window, document, undefined) {
     return d;
 })(this, this.document);
 
-// Installing paper on the global scope
+// Installing paper on the global scope and creating's paper scope.
 paper.install(window);
-
+paper = new paper.PaperScope(); 
 $(function() {
-    var pappoly;
-    function draw() {
-        Drawer.draw();
-        view.draw();
-    }
-    function redraw() {
-        var layer;
-        project.activeLayer.remove(); 
-        layer = new Layer(); 
-        draw();
-    }
+    var pappoly, papdots;
 
     // Get a reference to the canvas object
     pappoly = document.getElementById('pappoly');
+    papdots = document.getElementById('papdots');
     // Create an empty project and a view for the canvas:
     paper.setup(pappoly);
-    Drawer.init();
-
-    // Draw
-    draw();
-    
+    paper.setup(papdots);
     Dots.init('papdots');
-    Dots.draw();
+    Drawer.init();
+    
+    // Draw
+    Drawer.draw(0);
+    Dots.draw(1);
     $('#pappoly').click(function(event) {
-        redraw();
-    });    
+        Drawer.draw(0);
+    });
+    $('#papdots').click(function(event) {
+       Dots.draw(1); 
+    });
     $("#polysave").click(function() {
         Drawer.save();
     });
     $('input[type=range]').change(function(e) {
         Drawer.updateValue(e.srcElement.id, e.srcElement.valueAsNumber);
-        redraw();
+        Drawer.draw(0);
     });
     $('input[name=sizedef]').change(function(e) {
         var size = Drawer.getCanvasSize(e.srcElement.value),
             pappoly = document.getElementById('pappoly');
-        console.log(size);
         pappoly.width = size[0];
         pappoly.height = size[1];
-        paper.setup(pappoly);
         Drawer.prepare();
-        redraw();
+        Drawer.draw(0);
     });
 });
 
