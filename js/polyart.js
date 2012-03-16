@@ -1,29 +1,13 @@
-var Dots = (function(window, document, undefined) {
-    var gr = 1.61803399,
-        size_x,
-        size_y,
-        max_c = 0.6,
-        min_c = 0.4,
-        canvas,
-        dot_size,
-        grid = [],
-        grid_size = 30,
-    createDot = function(point, size, color) {
-        circle = new Path.Circle(point, size);
-        circle.fillColor = color;
-    },
-    makeGrid = function() {
-        var max_x, max_y, i, j;
-        max_x = canvas.width;
-        max_y = canvas.height;
-        for (i = grid_size;i < max_x; i += grid_size) {
-            for (j = grid_size;j < max_y; j += grid_size) {
-                grid.push([i,j]);
-            }
-        }
-    },
-    d = {},
-    
+// Handling color
+var Color = (function(window, document, undefined) {
+    var mins = [0,0,0],
+        maxs = [1,1,1],
+        color_rgb_pref = {
+            0: 'a', 1: 'r', 2: 'g', 3: 'b',
+            a: '#fff', r: '#f00', g: '#0f0', b: '#00f',
+            cur: 0,weight: 0.25
+        },
+    // Internal functions
     colorDisapprove = function(color) {
         var r = color.r,
             g = color.g,
@@ -46,7 +30,8 @@ var Dots = (function(window, document, undefined) {
         }
         return disallow;
     },
-    createColor = function() {
+    
+    createRgbColor = function() {
         // @TODO use object data
         var color = {r: 0, g: 0, b: 0}, a, c;
         // Creating color
@@ -54,27 +39,112 @@ var Dots = (function(window, document, undefined) {
             color.r = Math.random();
             color.g = Math.random();
             color.b = Math.random();
+            // color preference
+            if (color_rgb_pref.cur > 0) {
+                color[color_rgb_pref[color_rgb_pref.cur]] = (color[color_rgb_pref[color_rgb_pref.cur]] + color_rgb_pref.weight) / (1 + color_rgb_pref.weight);
+            }
         }
-        a = Math.random() * Math.random();
+        
+        a = Math.random()* Math.random();
         c = new RgbColor(color.r, color.g, color.b, a);
     
         return c;
-    };
+        
+    },
+        o = {};
     
-    d.init = function(canvas_id) {
-        canvas = document.getElementById(canvas_id);
-        makeGrid();
-        dot_size = 6
+    o.createColor = function(colortype) {
+        var color = false;
+        // If no colortype is given going for rgb
+        if (typeof(colortype) === "undefined") {
+            colortype = 'Rgb';
+        }
+        if (colortype == 'Rgb') {
+            color = createRgbColor();
+        } else if (colortype == 'Hsl') {
+            color = createHslColor();
+        }
+        return color;
     };
-    d.draw = function(view_id) {
-        var i, c, p, layer;
+    o.setColorMin(minimums) {
+        mins = minimums;
+    };
+    o.setColorMax(maximums) {
+        maxs = maximums;
+    };
+    o.setWeight(wei) {
+        // @TODO add checks and set non rgb weights
+        color_rgb_pref.weight = wei;
+    }
+    
+    return o; 
+})(this, this.document);
+
+var Worksheet = (function(window, document, undefined) {
+    var sizes = {
+            'iPhone': [320, 480],
+            'iPhone4': [640, 960],
+            'iPad': [768, 1024],
+            'fs': [0, 0],
+        },
+        canvas,
+        gr = 1.61803399,
+        w = {};
+        
+    w.init = function(canvas_id) {
+        canvas = document.getElementById(canvas_id);
+        sizes.fs = [$(document).width(), $(document).height()];
+        // Custom preparation if needed
+        prepare();
+    };
+    w.clearCanvas = function(view_id) {
+        var layer;
         paper.projects[view_id].activate();
         paper.views[view_id].activate();
         paper.project.activeLayer.remove(); 
         layer = new Layer(); 
+    };
+    w.canvasSize = function() {
+        var x,y;
+        x = canvas.width;
+        y = canvas.height;
+        return [x,y];
+    }
+    return w;
+})(this, this.document);
+
+var Dots = (function(window, document, undefined) {
+    var w = new Worksheet(),
+        color = new Color(),
+        dot_size,
+        grid = [],
+        grid_size = 30,
+    createDot = function(point, size, color) {
+        circle = new Path.Circle(point, size);
+        circle.fillColor = color;
+    },
+    makeGrid = function() {
+        var max_x, max_y, i, j;
+        [max_x, max_y] = w.canvasSize();
+        for (i = grid_size;i < max_x; i += grid_size) {
+            for (j = grid_size;j < max_y; j += grid_size) {
+                grid.push([i,j]);
+            }
+        }
+    },
+    d = {},
+    
+    d.init = function(canvas_id) {
+        w.init(canvas_id);
+        makeGrid();
+        dot_size = 6
+    };
+    d.draw = function(view_id) {
+        var i, c, p;
+        w.clearCanvas();
         for (i = 0;i < grid.length; i++) {
             p = new Path.Circle(new Point(grid[i][0], grid[i][1]), dot_size);
-            c = createColor();
+            c = color.createColor('Rgb');
             p.fillColor = c;
         }
         paper.view.draw();
