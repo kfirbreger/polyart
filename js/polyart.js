@@ -32,7 +32,6 @@ var Art = (function(window, document, undefined) {
             }
             return disallow;
         },
-    
         createRgbColor = function() {
             // @TODO use object data
             var color = {r: 0, g: 0, b: 0}, a, c;
