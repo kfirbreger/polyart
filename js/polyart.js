@@ -277,6 +277,11 @@ $(function() {
         Art.polys.prepare();
         Art.polys.draw(0);
     });
+    
+    // controls
+    $('#sides').change(function () {
+        $('#sides-label').html($(this).val());
+    });
 });
 
 function showModal() {
