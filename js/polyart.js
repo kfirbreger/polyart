@@ -123,7 +123,7 @@ var Art = (function(window, document, undefined) {
             save: function() {
                 var img;
                 img = this.canvas.toDataURL("image/png");
-                document.location.href = img.replace("image/png", save_mime);
+                document.location.href = img.replace("image/png", this.save_mime);
             }
         }
         return w;
@@ -275,6 +275,11 @@ $(function() {
         pappoly.height = size[1];
         Art.polys.prepare();
         Art.polys.draw(0);
+    });
+    
+    // controls
+    $('#sides').change(function () {
+        $('#sides-label').html($(this).val());
     });
 });
 
