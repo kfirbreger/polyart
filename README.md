@@ -14,3 +14,5 @@ I'll assume you know jQuery. Paper.js is used for drawing.
 ##Browser support
 This project is, as said, in alpha and so not heavily test cross browser. At the moment there is no fallback for input type range,
 so your probably better off viewing this on a webkit browser.
+
+You can see the code running at [kfirbreger.com/polyart](http://kfirbreger.com/polyart)
