@@ -20,6 +20,14 @@ h1 {
     height: 3em;
 }
 
+.fullscreen {
+    margin-left: 0.25em;
+    position: relative;
+    top: 0.33em;
+    width: 1.2em;
+    height: 1.2em;
+}
+
 .resipa {
     width: 3em;
 }
@@ -38,7 +46,7 @@ h1 {
 
 #container {
     padding: 1em;
-    width: 900px;
+    width: 1024px;
     text-align:center;
 }
 

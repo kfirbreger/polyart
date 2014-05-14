@@ -1,3 +1,5 @@
+/*jshint jquery: false, browser: false, debug: false */
+/*global $:false, paper:false, Layer:false, RgbColor: false, Path: false, Point: false */
 var Art = (function(window, document, undefined) {
     // Handling color
     var a = {},
@@ -76,25 +78,25 @@ var Art = (function(window, document, undefined) {
         o.setWeight = function(wei) {
             // @TODO add checks and set non rgb weights
             color_rgb_pref.weight = wei;
-        }
+        };
         o.setRgbColorPref = function(c) {
-            color_rgb_pref = c
-        }
+            color_rgb_pref = c;
+        };
         o.setRgbColorPrefCur = function(cur) {
             color_rgb_pref.cur = cur;
-        }
+        };
         o.getRgbPrefColor = function() {
             return color_rgb_pref[color_rgb_pref[color_rgb_pref.cur]];
-        }
+        };
         return o; 
     },
     Worksheet = function() {
         var w = {
             sizes: {
-                'iPhone': [320, 480],
-                'iPhone4': [640, 960],
-                'iPad': [768, 1024],
-                'fs': [0, 0],
+                'iPhone': [640, 960],
+                'iPhone5': [640, 1136],
+                'iPad': [1536, 2048],
+                'fs': [0, 0]
             },
             canvas: false,
             save_mime: "image/octet-stream",
@@ -110,12 +112,14 @@ var Art = (function(window, document, undefined) {
             clearCanvas: function(view_id) {
                 var layer;
                 paper.projects[view_id].activate();
-                paper.views[view_id].activate();
+                if (paper.views) {
+                    paper.views[view_id].activate();
+                }
                 paper.project.activeLayer.remove(); 
                 layer = new Layer(); 
             },
             canvasSize: function() {
-                var x,y;
+                var x, y;
                 x = this.canvas.width;
                 y = this.canvas.height;
                 return [x,y];
@@ -125,7 +129,7 @@ var Art = (function(window, document, undefined) {
                 img = this.canvas.toDataURL("image/png");
                 document.location.href = img.replace("image/png", this.save_mime);
             }
-        }
+        };
         return w;
     },
     dots, polys;
@@ -142,7 +146,7 @@ var Art = (function(window, document, undefined) {
             this.makeGrid();
         };
         this.createDot = function(point, size, color) {
-            circle = new Path.Circle(point, size);
+            var circle = new Path.Circle(point, size);
             circle.fillColor = color;
         };
         this.makeGrid = function() {
@@ -177,8 +181,8 @@ var Art = (function(window, document, undefined) {
 
         this.createLocation = function() {
             var px, py, p;
-            px = Math.round(Math.random() * (x + this.offset * 2) - this.offset);
-            py = Math.round(Math.random() * (y + this.offset * 2) - this.offset);
+            px = Math.round(Math.random() * (this.x + this.offset * 2) - this.offset);
+            py = Math.round(Math.random() * (this.y + this.offset * 2) - this.offset);
             p = new Point(px, py);
             return p;
         };
@@ -189,18 +193,22 @@ var Art = (function(window, document, undefined) {
             //size = Math.abs(9 * Math.pow(size, 4) - 12 * Math.pow(size, 3) + 3 * Math.pow(size, 2));
             size = Math.round(6 + (size * this.gr * 30));
             c = this.color.createColor();
-            poly = new Path.RegularPolygon(point, sides, size);
+            poly = new Path.RegularPolygon(point, this.sides, size);
             poly.fillColor = c;
+        };
+        this.updateSize = function(size) {
+            paper.view.setViewSize(size[0], size[1]);
         };
         this.setSize = function() {
             var c = $(this.canvas);
-            x = c.width();
-            y = c.height();
+            this.x = c.width();
+            this.y = c.height();
+            //paper.view.setViewSize(this.x, this.y);
         };
         this.updateFromPolyForm = function() {
-            num = parseInt($('#num').val(), 10);
-            sides = parseInt($('#sides').val(), 10);
-        };    
+            this.num = parseInt($('#num').val(), 10);
+            this.sides = parseInt($('#sides').val(), 10);
+        }; 
         this.prepare = function() {
             this.setSize();
             this.updateFromPolyForm();
@@ -209,17 +217,16 @@ var Art = (function(window, document, undefined) {
         this.draw = function(view_id) {
             var i;
             this.clearCanvas(view_id);
-            for (i = 0;i < num; i++) {
+            for (i = 0;i < this.num; i++) {
                 this.addPolygon();
             }
-            paper.view.draw();
+            paper.projects[view_id].view.draw();
         };
         this.updateValue = function(field, val) {
-            var c;
             if (field == 'num') {
-                num = val;
+                this.num = val;
             } else if (field == 'sides') {
-                sides = val;
+                this.sides = val;
             } else if (field =='colorpref') {
                 this.color.setRgbColorPrefCur(val);
                 $('#colorprefshow').css('background-color', this.color.getRgbPrefColor);
@@ -239,10 +246,9 @@ var Art = (function(window, document, undefined) {
 
 // Installing paper on the global scope and creating's paper scope.
 paper.install(window);
-paper = new paper.PaperScope(); 
+//paper = new paper.PaperScope(); 
 $(function() {
     var pappoly, papdots;
-
     // Get a reference to the canvas object
     pappoly = document.getElementById('pappoly');
     papdots = document.getElementById('papdots');
@@ -269,11 +275,8 @@ $(function() {
         Art.polys.draw(0);
     });
     $('input[name=sizedef]').change(function(e) {
-        var size = Art.polys.getCanvasSize(e.srcElement.value),
-            pappoly = document.getElementById('pappoly');
-        pappoly.width = size[0];
-        pappoly.height = size[1];
-        Art.polys.prepare();
+        var size = Art.polys.getCanvasSize(e.srcElement.value);
+        Art.polys.updateSize(size);
         Art.polys.draw(0);
     });
     

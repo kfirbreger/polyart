@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="css/type.css" type="text/css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="css/master.css" type="text/css" media="screen" charset="utf-8">
     <script src="js/jquery-1.7.1.min.js"></script>
-    <script src="js/paper.js"></script>
+    <script src="js/paper-core.js"></script>
     <script src="js/polyart.js"></script>
 </head>
 <body>
     <div id="container" class="middle">
         <div id="polygons">
             <h1 class="raletitle">Polygon</h1>
-            <canvas id="pappoly" width="320" height="480" title="paper.js and canvas tag"></canvas>
+            <canvas id="pappoly" width="480" height="640" title="paper.js and canvas tag" resize></canvas>
             <p>Click on the tapestry to regenerate it</p>
             <div id="controls">
                 <div class="crow">
@@ -26,12 +26,6 @@
                     <input type="range" id="colorpref" value="0" min="0" max="3" step="1">
                 </div>
                 <div class="crow">
-                    <input type="radio" name="sizedef" value="iPhone" checked><img class="resipo" src="images/iphone.svg">
-                    <input type="radio" name="sizedef" value="iPhone4"><img class="resipo" src="images/iphone4.svg">
-                    <input type="radio" name="sizedef" value="iPad"><img class="resipa" src="images/ipad.svg">
-                    <!-- <input type="radio" name="sizedef" value="fs"><img class="resfs" src="images/fs.svg"> -->
-                </div>
-                <div class="crow">
                     <img id="polysave" class="save_button" src="images/save-icon.svg">
                 </div>
             </div>
@@ -39,7 +33,7 @@
         <hr>
         <div id="dots">
             <h1 class="raletitle">Dots</h1>
-            <canvas id="papdots" width="640" height="480" title="Color dots"></canvas>
+            <canvas id="papdots" width="640" height="480" title="Color dots" resize></canvas>
             <p>Click on the tapestry to regenerate it</p>
         </div>
     </div>
