@@ -34,6 +34,9 @@ var Art = (function(window, document, undefined) {
             }
             return disallow;
         },
+        createHslColor = function() {
+            return false;
+        },
         createRgbColor = function() {
             // @TODO use object data
             var color = {r: 0, g: 0, b: 0}, a, c;
@@ -92,12 +95,6 @@ var Art = (function(window, document, undefined) {
     },
     Worksheet = function() {
         var w = {
-            sizes: {
-                'iPhone': [640, 960],
-                'iPhone5': [640, 1136],
-                'iPad': [1536, 2048],
-                'fs': [0, 0]
-            },
             canvas: false,
             save_mime: "image/octet-stream",
             color: new Color(),
@@ -105,7 +102,7 @@ var Art = (function(window, document, undefined) {
             
             init: function(canvas_id) {
                 this.canvas = document.getElementById(canvas_id);
-                this.sizes.fs = [$(document).width(), $(document).height()];
+                this.fs = [$(document).width(), $(document).height()];
                 // Custom preparation if needed
                 this.prepare();
             },
@@ -132,7 +129,7 @@ var Art = (function(window, document, undefined) {
         };
         return w;
     },
-    dots, polys;
+    dots, polys, circledots;
     // Creating an object per worksheet and adding its specific functions
     //----------------------------------------------------------------------
     // Creating dots
@@ -196,14 +193,15 @@ var Art = (function(window, document, undefined) {
             poly = new Path.RegularPolygon(point, this.sides, size);
             poly.fillColor = c;
         };
-        this.updateSize = function(size) {
-            paper.view.setViewSize(size[0], size[1]);
+        this.updateSize = function(view_id, size) {
+            paper.projects[view_id].view.viewSize = new paper.Size(size[0], size[1]);
+            this.x = size[0];
+            this.y = size[1];
         };
         this.setSize = function() {
             var c = $(this.canvas);
             this.x = c.width();
             this.y = c.height();
-            //paper.view.setViewSize(this.x, this.y);
         };
         this.updateFromPolyForm = function() {
             this.num = parseInt($('#num').val(), 10);
@@ -236,10 +234,86 @@ var Art = (function(window, document, undefined) {
                return this.sizes[t];
         };        
     }).apply(polys);
+    circledots = new Worksheet();
+    (function() {
+        this.center_x = 0;
+        this.center_y = 0;
+        this.radius = 0;
+        this.dot_size = 0;
+        this.dot_count = 0;
+        this.superimpose = true;  // Wether to allow dots to overlap or not
+        this.dots = [];
+        this.superimpose_max_tries = 1000;  // To make sure the code does not deadlock, this is a limit on the attepmts to find a location
+        
+        this.prepare = function() {
+            var center;
+            // Calculating the center point for the canvas
+            center = this.canvasSize();
+            this.center_x = center[0] / 2;
+            this.center_y = center[1] / 2;
+            // Setting defaults for radius, and dots
+            this.radius = Math.round(this.center_x * 0.8);
+            this.dot_size = 6;
+            this.dot_count = 42*5;
+            
+        };
+        this.createLocation = function () {
+            var theta, dist, x, y;
+            // Creating a random location
+            theta = 2 * Math.PI * Math.random();
+            dist = Math.random() + Math.random();
+            if (dist > 1) {
+                dist = 2 - dist;
+            }
+            // Changing from normalized distance to actual
+            dist = dist * this.radius;
+            // Conveting angle / distanct to x,y on the canvas
+            x = Math.round(dist * Math.cos(theta) + this.center_x);
+            y = Math.round(dist * Math.sin(theta) + this.center_y);
+            // Returng an x,y array
+            return [x, y];
+        };
+        this.testCollision = function(loc) {
+            // Tests if loc collides with another circle
+            var i, dot_distance = this.dot_size * 2;
+            for (i = 0;i < this.dots.length;i++) {
+                if (Math.abs(loc[0] - this.dots[i][0]) < dot_distance && Math.abs(loc[1] - this.dots[i][1]) < dot_distance) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        this.addDotInCircle = function () {
+            var loc, p, c, i = 0;
+            loc = this.createLocation();
+            while (this.testCollision(loc) && this.superimpose && i++ < this.superimpose_max_tries) {
+                loc = this.createLocation();
+            }
+            // At the moment if no location is found, the dot is not set. This could be turned into a setting
+            if (i < this.superimpose_max_tries) {
+                this.dots.push(loc);
+                // Placing the dot
+                p = new Path.Circle(new Point(loc[0], loc[1]), this.dot_size);
+                c = new RgbColor(0.1, 0.1, 0.1, 0.9);  // this.color.createColor('Rgb');
+                p.fillColor = c;
+            }
+        };
+        this.draw = function(view_id) {
+            var i;
+            this.dots = []; // Emptying the dots array
+            this.clearCanvas(view_id);
+            for (i = 0;i < this.dot_count; i++) {
+                this.addDotInCircle();
+            }
+            paper.projects[view_id].view.draw();
+        }; 
+        
+    }).apply(circledots);
 
     // Exposing
     a.dots = dots;
     a.polys = polys;
+    a.circledots = circledots;
     return a;
 })(this, this.document);
 
@@ -248,24 +322,31 @@ var Art = (function(window, document, undefined) {
 paper.install(window);
 //paper = new paper.PaperScope(); 
 $(function() {
-    var pappoly, papdots;
+    var pappoly, papdots, papcircledots;
     // Get a reference to the canvas object
     pappoly = document.getElementById('pappoly');
     papdots = document.getElementById('papdots');
+    papcircledots = document.getElementById('papcircledots');
     // Create an empty project and a view for the canvas:
     paper.setup(pappoly);
     paper.setup(papdots);
+    paper.setup(papcircledots);
     Art.polys.init('pappoly');
     Art.dots.init('papdots');
-    
+    Art.circledots.init('papcircledots');
     // Draw
     Art.polys.draw(0);
     Art.dots.draw(1);
+    Art.circledots.draw(2);
+    
     $('#pappoly').click(function(event) {
         Art.polys.draw(0);
     });
     $('#papdots').click(function(event) {
        Art.dots.draw(1);
+    });
+    $('#papcircledots').click(function(event) {
+        Art.circledots.draw(2);
     });
     $("#polysave").click(function() {
         Art.polys.save();
@@ -274,10 +355,17 @@ $(function() {
         Art.polys.updateValue(e.srcElement.id, e.srcElement.valueAsNumber);
         Art.polys.draw(0);
     });
-    $('input[name=sizedef]').change(function(e) {
-        var size = Art.polys.getCanvasSize(e.srcElement.value);
-        Art.polys.updateSize(size);
+    $('#poly_fullscreen').click(function(e) {
+        var size = [document.width, document.height];
+        Art.polys.updateSize(0, size);
         Art.polys.draw(0);
+        canvas = document.getElementById("pappoly");
+        canvas.style["border"] = "0";
+        canvas.style["position"] = "absolute";
+        canvas.style['top'] = '0';
+        canvas.style['left'] = '0';
+        document.getElementById('container').style['margin-top'] = size[1];
+        
     });
     
     // controls

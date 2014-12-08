@@ -13,8 +13,8 @@
 <body>
     <div id="container" class="middle">
         <div id="polygons">
-            <h1 class="raletitle">Polygon</h1>
-            <canvas id="pappoly" width="480" height="640" title="paper.js and canvas tag" resize></canvas>
+            <h2 class="raletitle">Polygon</h1>
+            <canvas id="pappoly" width="480" height="640" title="paper.js and canvas tag"></canvas>
             <p>Click on the tapestry to regenerate it <img class="fullscreen" src="images/fs.svg"></p>
             <div id="controls">
                 <div class="crow">
@@ -24,6 +24,7 @@
                     <input type="range" id="num" value="2000" min="0" max="10000" step="250">
                     <div id="colorprefshow"></div>
                     <input type="range" id="colorpref" value="0" min="0" max="3" step="1">
+                    <a href="#" id="poly_fullscreen">F</a>
                 </div>
                 <div class="crow">
                     <img id="polysave" class="save_button" src="images/save-icon.svg">
@@ -32,8 +33,14 @@
         </div>
         <hr>
         <div id="dots">
-            <h1 class="raletitle">Dots</h1>
-            <canvas id="papdots" width="640" height="480" title="Color dots" resize></canvas>
+            <h2 class="raletitle">Dots</h1>
+            <canvas id="papdots" width="640" height="480" title="Color dots"></canvas>
+            <p>Click on the tapestry to regenerate it <img class="fullscreen" src="images/fs.svg"></p>
+        </div>
+        <hr>
+        <div id="circledots">
+            <h2 class="raletitle">Circular Dots</h2>
+            <canvas id="papcircledots" width="480" height="480" title="Circle Dots"></canvas>
             <p>Click on the tapestry to regenerate it <img class="fullscreen" src="images/fs.svg"></p>
         </div>
     </div>
