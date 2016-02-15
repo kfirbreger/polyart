@@ -129,7 +129,7 @@ var Art = (function(window, document, undefined) {
         };
         return w;
     },
-    dots, polys, circledots;
+    dots, polys, circledots, circlerays, circlespread;
     // Creating an object per worksheet and adding its specific functions
     //----------------------------------------------------------------------
     // Creating dots
@@ -309,11 +309,128 @@ var Art = (function(window, document, undefined) {
         }; 
         
     }).apply(circledots);
+    circlerays = new Worksheet();
+    (function() {
+        this.center_x = 0;
+        this.center_y = 0;
+        this.line_length = 0;
+        this.line_count = 0;
+        this.line_length = 0;
+        this.line_thickness = 0;
+        this.color_spread = 0;  // This will be added later to allow for some color shifting in the line
+        this.superimpose = true;  // Wether to allow dots to overlap or not
+        this.lines = [];
+        this.superimpose_max_tries = 1000;  // To make sure the code does not deadlock, this is a limit on the attepmts to find a location
+        this.range_from_center = {min: 0, max: 0};
+        
+        this.prepare = function() {
+            var center;
+            // Calculating the center point for the canvas
+            center = this.canvasSize();
+            this.center_x = center[0] / 2;
+            this.center_y = center[1] / 2;
+            this.line_count = 150;
+            this.line_length = 180;
+            this.line_thickness = 2;
+            this.range_from_center.min = 10;
+            this.range_from_center.max = 80;
+        };
+        this.draw = function(view_id) {
+            var i;
+            this.lines = []; // Emptying the dots array
+            this.clearCanvas(view_id);
+            for (i = 0;i < this.line_count; i++) {
+                this.addLine();
+            }
+            paper.projects[view_id].view.draw();
+        };
+        this.addLine = function() {
+            var loc, p, i = 0;
+            loc = this.createLocation();
+            // while (this.testCollision(loc) && this.superimpose && i++ < this.superimpose_max_tries) {
+//                 loc = this.createLocation();
+//             }
+            // At the moment if no location is found, the dot is not set. This could be turned into a setting
+            if (i < this.superimpose_max_tries) {
+                this.lines.push(loc);
+                // Placing the dot
+                p = new Path.Line(loc);
+            }
+        };
+        this.createLocation = function () {
+            var theta, dist, x, y, loc = {strokeColor: 'black', strokeWidth: this.line_thickness};
+            // Creating a random location
+            theta = 2 * Math.PI * Math.random();
+            dist = Math.round((this.range_from_center.max - this.range_from_center.min) * Math.random() + this.range_from_center.min);
+            
+            // Conveting angle / distanct to x,y on the canvas
+            x = Math.round(dist * Math.cos(theta) + this.center_x);
+            y = Math.round(dist * Math.sin(theta) + this.center_y);
+            loc.from = [x,y];
+            x = Math.round(this.line_length * Math.cos(theta) + x);
+            y = Math.round(this.line_length * Math.sin(theta) + y);
+            loc.to = [x,y];
+            // Returng an x,y array
+            return loc;
+        };
+    }).apply(circlerays);
+    circlespread = new Worksheet();
+    (function() {
+        this.center_x = 0;
+        this.center_y = 0;
+        this.base_form_corners = 0;
+        this.base_form_size = 200;
+        this.first_level_size = 0;
+        this.first_level_width = 0;
+        this.size_scale = 0;
+        this.width_scale = 0;
+        this.stop_size = 1;
+        
+        this.prepare = function() {
+            var center = this.canvasSize();
+            this.center_x = center[0] / 2;
+            this.center_y = center[1] / 2;
+            this.base_form_corners = 3;
+            this.first_level_size = 250;
+            this.first_level_width = 10;
+            this.size_scale = 0.8;
+            this.width_scale = 0.8;
+        };
+        this.draw = function(view_id) {
+            var size = this.first_level_size,
+                wdt = this.first_level_width,
+                form_size = this.base_form_size;
+            this.clearCanvas(view_id);
+            while (size > this.stop_size) {
+                this.drawLevel(size, wdt, form_size);
+                size *= this.size_scale;
+                wdt *= this.width_scale;
+                form_size *= this.size_scale;
+            }
+            paper.projects[view_id].view.draw();
+        };
+        this.drawLevel = function(size, wdt, form_size) {
+            // Draws a level Starting by figuring out the center of the circles,
+            // Then drawing them
+            var angle_step = Math.PI * 2 / this.base_form_corners,
+                theta = 0,
+                i, x, y, p;
+            for (i = 0; i < this.base_form_corners; i++) {
+                theta = angle_step * i;
+                x = Math.round(form_size * Math.cos(theta) + this.center_x);
+                y = Math.round(form_size * Math.sin(theta) + this.center_y);
+                p = new Path.Circle(new Point(x, y), size);
+            }
+            
+        };
+    }).apply(circlespread);
 
     // Exposing
     a.dots = dots;
     a.polys = polys;
     a.circledots = circledots;
+    a.circlerays = circlerays;
+    a.circlespread = circlespread;
     return a;
 })(this, this.document);
 
@@ -327,18 +444,21 @@ $(function() {
     pappoly = document.getElementById('pappoly');
     papdots = document.getElementById('papdots');
     papcircledots = document.getElementById('papcircledots');
+    papcirclerays = document.getElementById('papcirclerays');
     // Create an empty project and a view for the canvas:
     paper.setup(pappoly);
     paper.setup(papdots);
     paper.setup(papcircledots);
+    paper.setup(papcirclerays);
     Art.polys.init('pappoly');
     Art.dots.init('papdots');
     Art.circledots.init('papcircledots');
+    Art.circlerays.init('papcirclerays')
     // Draw
     Art.polys.draw(0);
     Art.dots.draw(1);
     Art.circledots.draw(2);
-    
+    Art.circlerays.draw(3);
     $('#pappoly').click(function(event) {
         Art.polys.draw(0);
     });
@@ -347,6 +467,9 @@ $(function() {
     });
     $('#papcircledots').click(function(event) {
         Art.circledots.draw(2);
+    });
+    $('#papcirclerays').click(function(event) {
+        Art.circlerays.draw(3);
     });
     $("#polysave").click(function() {
         Art.polys.save();
